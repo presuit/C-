@@ -1,4 +1,5 @@
 #include <iostream>
+#include <Windows.h>
 #include <vector>
 #include <iomanip>
 #include <cstdlib>
@@ -212,16 +213,20 @@ int main()
 					//Move
 					varMove = move();
 					if (varMove == 1) //if error occurred
+						system("cls");
 						continue;
 					break;
 				case 2:
 					//Battle
 					varBattle = battle();
 					if (varBattle == 1) //if error occurred
+						system("cls");
 						continue;
 					break;
 				default:
 					cout << endl;
+					system("cls");
+					print_stage();
 					cout << "Input wrong answer please Input again" << endl;
 				}
 				check_stage();
@@ -290,10 +295,9 @@ int move()
 	isright = false;
 	while (isright == false)
 	{
-		cout << "===================================" << endl;
-		cout << "1. Up  2. Left  3. Right  4. Down" << endl;
-		cout << "===================================" << endl;
-		cout << "5. back" << endl;
+		cout << "============================================" << endl;
+		cout << "1. Up  2. Left  3. Right  4. Down  5. Back" << endl;
+		cout << "============================================" << endl;
 		cin >> whereto;
 		switch (whereto)
 		{
@@ -381,7 +385,6 @@ int move()
 			cout << "Input wrong answer please Input value again" << endl;
 		}
 	}
-
 	return 0;
 }
 
