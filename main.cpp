@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <vector>
+#include <string>
 #include <iomanip>
 #include <cstdlib>
 #include <chrono>
@@ -166,6 +167,9 @@ const int END_GAME = 5;
 
 int Game_Mode = 1;
 int STAGE = 1;
+string Error;
+
+HANDLE hconsole = GetStdHandle(STD_OUTPUT_HANDLE); // 텍스트 색 지정 
 
 void set_stageN();
 void print_stage();
@@ -174,15 +178,17 @@ void check_stage();
 int move();
 int battle();
 
+
+
 int main()
 {
 	int menu;
 	int varMove;
 	int varBattle;
-	
+
 	bool endGame = false;
 
-	while (endGame == false) 
+	while (endGame == false)
 	{
 		switch (Game_Mode)
 		{
@@ -201,6 +207,7 @@ int main()
 			//IN_GAME
 			while (Game_Mode == 3)
 			{
+				SetConsoleTextAttribute(hconsole, 15);
 				print_stage();
 				cout << "===================" << endl;
 				cout << "1. Move. 2. Battle" << endl;
@@ -212,22 +219,38 @@ int main()
 				case 1:
 					//Move
 					varMove = move();
-					if (varMove == 1) //if error occurred
+					if (varMove == 1)//if error occurred
+					{ 
 						system("cls");
+						SetConsoleTextAttribute(hconsole, 12);
+						cout << "Error : " << Error << endl;
 						continue;
+					}
+					else 
+					{
+						system("cls");
+					}
 					break;
 				case 2:
 					//Battle
 					varBattle = battle();
 					if (varBattle == 1) //if error occurred
+					{
 						system("cls");
+						SetConsoleTextAttribute(hconsole, 12);
+						cout << "Error : " << Error << endl;
 						continue;
+					}
+					else
+					{
+						system("cls");
+					}
 					break;
 				default:
 					cout << endl;
 					system("cls");
-					print_stage();
-					cout << "Input wrong answer please Input again" << endl;
+					SetConsoleTextAttribute(hconsole, 12);
+					cout << "Error : Input wrong answer please Input again" << endl;
 				}
 				check_stage();
 			}
@@ -255,7 +278,7 @@ int main()
 }
 
 
-int move() 
+int move()
 {
 	int x, y, whereto;
 	bool isright = false;
@@ -266,28 +289,24 @@ int move()
 	cin >> x;
 	if (x > game_board.size())
 	{
-		cout << endl;
-		cout << "It is not valid position!" << endl;
+		Error = "It is not valid position!";
 		return 1;
 	}
 	cout << "Y : ";
 	cin >> y;
 	if (y > game_board[x].size())
 	{
-		cout << endl;
-		cout << "It is not valid position!" << endl;
+		Error = "It is not valid position!";
 		return 1;
 	}
-	if (game_board[x][y].get_type() == 'K') 
+	if (game_board[x][y].get_type() == 'K')
 	{
-		cout << endl;
-		cout << "You can't move King!" << endl;
+		Error = "You can't move King!";
 		return 1;
 	}
 	if (game_board[x][y].get_is_move() == true)
 	{
-		cout << endl;
-		cout << "you already moved that Pin!" << endl;
+		Error = "you already moved that Pin!";
 		return 1;
 	}
 	cout << endl;
@@ -305,7 +324,7 @@ int move()
 			//up
 			if (x - 1 >= 0 && x - 1 < game_board.size())
 			{
-				if (game_board[x-1][y].get_type() == 'K') 
+				if (game_board[x - 1][y].get_type() == 'K')
 				{
 					cout << endl;
 					cout << "You can't move King!" << endl;
@@ -324,7 +343,7 @@ int move()
 			//left
 			if (y - 1 >= 0 && y - 1 < game_board[x].size())
 			{
-				if (game_board[x][y-1].get_type() == 'K')
+				if (game_board[x][y - 1].get_type() == 'K')
 				{
 					cout << endl;
 					cout << "You can't move King!" << endl;
@@ -343,7 +362,7 @@ int move()
 			//right
 			if (y + 1 >= 0 && y + 1 < game_board[x].size())
 			{
-				if (game_board[x][y+1].get_type() == 'K')
+				if (game_board[x][y + 1].get_type() == 'K')
 				{
 					cout << endl;
 					cout << "You can't move King!" << endl;
@@ -362,7 +381,7 @@ int move()
 			//down
 			if (x + 1 >= 0 && x + 1 < game_board.size())
 			{
-				if (game_board[x+1][y].get_type() == 'K')
+				if (game_board[x + 1][y].get_type() == 'K')
 				{
 					cout << endl;
 					cout << "You can't move King!" << endl;
@@ -378,7 +397,7 @@ int move()
 			}
 			break;
 		case 5:
-			return 1;
+			return 2;
 			break;
 		default:
 			cout << endl;
@@ -399,22 +418,19 @@ int battle()
 	cin >> x;
 	if (x > game_board.size())
 	{
-		cout << endl;
-		cout << "It is not valid position!" << endl;
+		Error = "It is not valid position!";
 		return 1;
 	}
 	cout << "Y : ";
 	cin >> y;
 	if (y > game_board[x].size())
 	{
-		cout << endl;
-		cout << "It is not valid position!" << endl;
+		Error = "It is not valid position!";
 		return 1;
 	}
 	if (game_board[x][y].get_type() != 'K')
 	{
-		cout << endl;
-		cout << "It is not U's position!" << endl;
+		Error = "It is not U's position!";
 		return 1;
 	}
 	cout << endl;
@@ -425,8 +441,7 @@ int battle()
 	cin >> y2;
 	if (game_board[x2][y2].get_type() != 'K')
 	{
-		cout << endl;
-		cout << "It is not U's position!" << endl;
+		Error = "It is not U's position!";
 		return 1;
 	}
 	//check can wage battle  
@@ -487,7 +502,7 @@ int battle()
 		}
 	}
 
-	if (canIWage == true) 
+	if (canIWage == true)
 	{
 		//find People x, y
 		if (x - 1 <= game_board.size() && y - 1 <= game_board[x - 1].size())
@@ -614,8 +629,7 @@ int battle()
 		}
 		else
 		{
-			cout << endl;
-			cout << "Both King's power are same , can't wage war" << endl;
+			Error = "Both King's power are same , can't wage war";
 			game_board[x][y].reset_power();
 			game_board[x2][y2].reset_power();
 			return 1;
@@ -623,10 +637,11 @@ int battle()
 		game_board[x][y].reset_power();
 		game_board[x2][y2].reset_power();
 	}
-	else 
+	else
 	{
 		cout << endl;
-		cout << "There is no King around ( " << x << ", " << y << " )!" << endl;
+		Error = "There is no king around";
+		//cout << "There is no King around ( " << x << ", " << y << " )!" << endl;
 		return 1;
 	}
 
@@ -635,7 +650,7 @@ int battle()
 
 void set_stageN()
 {
-	switch (STAGE) 
+	switch (STAGE)
 	{
 	case 1:
 		for (int i = 0; i < 4; i++)
@@ -664,7 +679,7 @@ void set_stageN()
 		game_board[3].push_back(Pin('S', 'R', 0, 0));
 		break;
 	case 2:
-		for (int i = 0; i < 3; i++) 
+		for (int i = 0; i < 3; i++)
 		{
 			game_board.push_back(_game_board);
 		}
@@ -684,7 +699,7 @@ void set_stageN()
 		game_board[2].push_back(Pin('S', 'E', 0, 0));
 		game_board[2].push_back(Pin('P', 'Y', 1, 0));
 		break;
-	default: 
+	default:
 		break;
 	}
 }
@@ -694,77 +709,79 @@ void print_stage()
 	int lineCount = 0;
 
 	cout << endl;
-	cout << "#Stage[ " << STAGE << " ]" << endl <<  endl;
+	SetConsoleTextAttribute(hconsole, 10);
+	cout << "Stage[ " << STAGE << " ]" << endl << endl;
+	SetConsoleTextAttribute(hconsole, 15);
 	for (int i = 0; i < game_board.size(); i++)
 	{
 		lineCount = 0;
 		cout << " ";
 		for (int j = 0; j < game_board[i].size(); j++)
 		{
-			if (j == game_board[i].size() - 1) 
+			if (j == game_board[i].size() - 1)
 			{
 				cout << setw(2) << game_board[i][j];
 				lineCount++;
 			}
-			else 
+			else
 			{
 				cout << setw(2) << game_board[i][j] << " |";
 				lineCount++;
 			}
 		}
 		cout << endl;
-		if (i != game_board.size() - 1) 
+		if (i != game_board.size() - 1)
 		{
 			for (int k = 0; k < lineCount; k++)
 			{
-				if (k == 0) 
+				if (k == 0)
 				{
 					cout << " ---|";
 				}
-				else if (k == lineCount -1)
+				else if (k == lineCount - 1)
 				{
 					cout << "---";
 				}
-				else 
+				else
 				{
 					cout << "---|";
 				}
 			}
 		}
 		cout << endl;
-		
+
 	}
 }
 
-void check_stage() 
+void check_stage()
 {
 	int countK = 0;
 	int countS = 0;
 
-	for (int i = 0; i < game_board.size(); i++) 
+	for (int i = 0; i < game_board.size(); i++)
 	{
-		for (int j = 0; j < game_board[i].size(); j++) 
+		for (int j = 0; j < game_board[i].size(); j++)
 		{
-			if (game_board[i][j].get_type() == 'K') 
+			if (game_board[i][j].get_type() == 'K')
 			{
 				countK++;
-				if (i-1 <= game_board.size() && j <= game_board[i-1].size()) 
+				if (i - 1 <= game_board.size() && j <= game_board[i - 1].size())
 				{
-					if (game_board[i - 1][j].get_type() == 'S') 
+					if (game_board[i - 1][j].get_type() == 'S')
 					{
 						countS++;
 					}
 				}
-				if (i <= game_board.size() && j-1 <= game_board[i].size())
+				if (i <= game_board.size() && j - 1 <= game_board[i].size())
 				{
-					if (game_board[i][j-1].get_type() == 'S')
+					if (game_board[i][j - 1].get_type() == 'S')
 					{
 						countS++;
 					}
 				}
-				if (i <= game_board.size() && j+1 <= game_board[i].size())
+				if (i <= game_board.size() && j + 1 <= game_board[i].size())
 				{
-					if (game_board[i][j+1].get_type() == 'S')
+					if (game_board[i][j + 1].get_type() == 'S')
 					{
 						countS++;
 					}
@@ -780,7 +797,7 @@ void check_stage()
 		}
 	}
 
-	if (countK == 1 && countS == 4) 
+	if (countK == 1 && countS == 4)
 	{
 		cout << endl;
 		cout << "Stage clear" << endl;
